@@ -4,8 +4,7 @@ from random import shuffle
 import os
 from players import CLIPlayer
 
-
-
+END = 0
 TEMPLATE = """
   _________________
  |     |     |     |
@@ -38,7 +37,7 @@ class TemplateTaquinPlayer :
     def help():
         return "move the space from source to destination"
     def move(board, config):
-        return (source, destination)
+        return piece_to_move
 
 
 
@@ -72,44 +71,49 @@ def draw():
 def update():
     clear()
     draw()
-    (source, dest) = player.move(BOARD, CONFIG)
-    if (is_valid(int(source), int(dest)) ):
-        print("it is valid")
+    x = player.move(BOARD, CONFIG)
+    if (is_valid(x)):
+        space = BOARD.index(' ')
+        new_space = BOARD.index(x)
+        BOARD[space] , BOARD[new_space] = BOARD[new_space] , BOARD[space]
     else :
-        print("invalid")
+        END=-1
 
 def setup():
     shuffle(BOARD)
-    
+    END = 0
     print("How should I could I call you fine sir?: ")
     no_name = True
     while(no_name):
         CONFIG['sir'] = str(input()).capitalize()
         no_name = ( len(CONFIG['sir']) == 0 )
-    print(no_name)
-    
     print("Setup complete.")
     print(CONFIG['sir'] + ", let us begin.")
 
-
-
-def is_valid(source, destination):
-    upper = source - int(CONFIG['cols'])
-    lower = source + int(CONFIG['cols'])
-    left = source - 1
-    right = source + 1
-    valid_moves = []
-    if (is_empty(upper) ): valid_moves.append(upper)
-    if (is_empty(lower) ): valid_moves.append(lower)
-    if (is_empty(left) ): valid_moves.append(left)
-    if (is_empty(right) ): valid_moves.append(right)
-    return (destination in valid_moves)
-
+def is_valid(x):
+    # x being the piece we want to move
+    empty = BOARD.index(' ')
+    new = BOARD.index(x)
+    upper = empty - int(CONFIG['cols'])
+    lower = empty + int(CONFIG['cols'])
+    left = empty - 1
+    right = empty + 1
+    valid_moves = [upper, lower, left, right]
+    return (new in valid_moves)
 
 def main():
     setup()
-    while(True):
+    sleep(1)
+    while(END==0):
         update()
-        sleep(7)
+        sleep(3)
 
-main()
+    if (END == -1):
+        print("Pathetic.")
+
+    else :
+        print("Decent enough. I will grant you passage.")
+
+
+if __name__ == "__main__":
+    main()
