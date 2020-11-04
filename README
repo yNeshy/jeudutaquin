@@ -1,0 +1,7 @@
+Download and run the game.py file.
+
+
+To create your own player, c/c the game.TemplateTaquinPlayer and implement your own move(board, config) function.
+
+Import your new Player, then edit this life one game.py to your newly implemented player.
+player = CLIPlayer()
