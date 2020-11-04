@@ -1,5 +1,11 @@
 from random import randrange
 
+#class GeneticAlgorithm():
+
+
+
+
+
 # implement move(board, config)
 class RandomPlayer():
     def possible_moves_for_x(self, x):

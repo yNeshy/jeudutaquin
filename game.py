@@ -19,7 +19,8 @@ TEMPLATE = """
  """
     
     # î
-    # î columns and rows identifiers.
+    # | columns and rows identifiers.
+
 TEMPLATE_LIST = ['(','é','"','@','&','ç','-','è',')']
 
 BOARD = [' ', '1', '2', '3', '4', '5', '6', '7', '8'] # initial board
@@ -32,11 +33,11 @@ CONFIG = {
 
 
 class TemplateTaquinPlayer :
-    def __init__():
+    def __init__(self):
         pass    
-    def help():
+    def help(self):
         return "move the space from source to destination"
-    def move(board, config):
+    def move(self, board, config):
         return piece_to_move
 
 
@@ -82,7 +83,7 @@ def update():
 def setup():
     shuffle(BOARD)
     END = 0
-    print("How should I could I call you fine sir?: ")
+    print("How should I call you fine sir?: ")
     no_name = True
     while(no_name):
         CONFIG['sir'] = str(input()).capitalize()
