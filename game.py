@@ -17,7 +17,7 @@ class TemplateTaquinPlayer :
 class CLITaquin():
     def __init__(self):
         self.player = LimitedDepthPlayer()
-        self.player.set_max_depth(34)
+        self.player.set_max_depth(8)
         
         
         self.END = 0
@@ -96,8 +96,9 @@ class CLITaquin():
         return won
 
     def setup(self):
-        shuffle(self.BOARD)
         
+        self.BOARD = ['1','4','2',' ','7','5','3','6','8']
+
         self.ROUND = 0
         self.END = 0
         #print("How should I call you fine sir?: ")

@@ -150,8 +150,7 @@ class LimitedDepthPlayer():
         return
 
     def move(self, board, config):
-        if(self.wins(board)):
-            return board[0]
+        
         print("My max depth is : "+str(self.max_depth))
         if not self.searched_once :
             print("Calculating...")
@@ -159,6 +158,8 @@ class LimitedDepthPlayer():
             self.board[self.board.index(' ')] = 0
             self.board = [ int(ele) for ele in self.board ]
             self.config = config
+            if(self.wins(self.board)):
+                return board[0]
             try:
                 start_time = time.time()
                 self.__search(self.board, [], 0, 0)
