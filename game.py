@@ -2,23 +2,14 @@ from copy import copy
 from time import sleep
 from random import shuffle
 import os
-from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer
+from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, LimitedDepthBreadthPlayer
 import time
-
-
-class TemplateTaquinPlayer :
-    def __init__(self):
-        pass    
-    def help(self):
-        return "move the space from source to destination"
-    def move(self, board, config):
-        return piece_to_move
+from iplayer import IPlayer
+from random import randrange
 
 class CLITaquin():
     def __init__(self):
-        self.player = LimitedDepthPlayer()
-        self.player.set_max_depth(8)
-        
+        self.player = LimitedDepthBreadthPlayer()
         
         self.END = 0
         self.TEMPLATE = """
@@ -55,9 +46,9 @@ class CLITaquin():
         """ return if a case is empty the board """
         if (case < 0):
             return False
-        if (case >= len(BOARD)):
+        if (case >= len(self.BOARD)):
             return False
-        if (BOARD[case] != ' '):
+        if (self.BOARD[case] != ' '):
             return False
         return True
 
@@ -70,16 +61,18 @@ class CLITaquin():
         print(curr_BOARD)
         del curr_BOARD
     
+    def move(self, x):
+        space = self.BOARD.index(' ')
+        new_space = self.BOARD.index(x)
+        self.BOARD[space] , self.BOARD[new_space] = self.BOARD[new_space] , self.BOARD[space]
+
     def update(self):
         self.clear()
         self.draw()
         x = self.player.move(self.BOARD, self.CONFIG)
         print("Sir {} asked to move {}.".format(self.CONFIG['sir'], x))
-        input()
         if (self.is_valid(x)):
-            space = self.BOARD.index(' ')
-            new_space = self.BOARD.index(x)
-            self.BOARD[space] , self.BOARD[new_space] = self.BOARD[new_space] , self.BOARD[space]
+            self.move(x)
             if self.is_won():
                 self.END=1
         else :
@@ -95,17 +88,29 @@ class CLITaquin():
             won = (self.BOARD[i-1] <= self.BOARD[i])
         return won
 
-    def setup(self):
-        
-        self.BOARD = ['1','4','2',' ','7','5','3','6','8']
+    def shuffle(self, complexity):
+        tools = IPlayer()
+        for _ in range(complexity):
+            options = [ str(o) for o in tools._possible_moves(self.BOARD, self.CONFIG) ]
+            x = options[randrange(len(options))]
+            self.move(x)
+        return self.BOARD
 
+    def setup(self):      
         self.ROUND = 0
         self.END = 0
-        #print("How should I call you fine sir?: ")
-        no_name = True
+        print("How should I call you fine sir?: ")
+        no_name = self.player.name
         while(no_name):
-            self.CONFIG['sir'] = "algorithm"  #str(input()).capitalize()
+            self.CONFIG['sir'] = str(input()).capitalize()
             no_name = ( len(self.CONFIG['sir']) == 0 )
+        _i = None
+        while (not _i):
+            _i = input("Choose a complexity level: [1;oo[ : ")
+        complexity = int(_i)
+        
+        self.shuffle(complexity)
+        self.player.set_max_depth(complexity + 3)
         print("Setup complete.")
         print(self.CONFIG['sir'] + ", let us begin.")
 
@@ -128,21 +133,23 @@ class CLITaquin():
         return (x in valid_moves)
 
     def main(self):
+        
+        self.setup()
+        self.draw()
         print("Enter to enter.")
-        while(str(input()) == ''):
-            self.setup()
-            self.draw()
-            print("Enter a character to begin.")
+        input()
 
         sleep(1)  
         while(self.END==0):
             self.ROUND += 1
             self.update()
-            sleep(0.5)
+            input()
+            sleep(1)
 
         if (self.END == -1):
             print("Pathetic.")
         else :
+            self.clear()
             self.draw()
             print("Decent enough. I will grant you passage.")
 
