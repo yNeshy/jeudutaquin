@@ -7,41 +7,163 @@ from iplayer import IPlayer
 class AstarAlgorithm(IPlayer):
     def __init__(self):
         self.name = "Fake A* algorithm that definitely doesn't work"
+        self.name = "Limited-depth search"
         self.solved = False
-        self.previous_move = ''
+        self.searched_once = False
+        self.solution = []
+        self.iterations = 0
+        self.depth = -1
+
+    def set_max_depth(self, depth):
+        self.depth = depth
 
     def distance_de_manhattan(self, xA, yA, xB, yB ):
         return abs(xB-xA) + abs(yB-yA)
 
+    class Node():
+        # could be a node factory, with heuristic implemented here. but yeah
+        # this is ugly. but yeah
+        def __init__(self, parent, move, board):
+            
+            self.parent = parent
+            self.move = move
+            self.board = board
+            if self.parent == None:
+                self.g = 0
+            else :
+                self.g = self.parent.g + 1
+            self.h = 0
+            self.cost = self.h + self.g
+
+        def equals(self, node):
+            return (self.board == node.board)
+
+        def in_list(self, node_list):
+            for node in node_list:
+                if(self.equals(node)):
+                    return True
+            return False
+
+        def __str__(self):
+            return str(self.board) + " : costs "+ str(self.cost)
+
     def heuristic(self, board):
         total_manhattan = 0
         for i in range(len(board)):
-            xA = int(board[i])/3
-            yA = int(board[i])%3
-            xB = i/3
-            yB = i%3
-            total_manhattan += self.distance_de_manhattan(xA, yA, xB, yB)
+            if(board[i] != 0):
+                xA = int(board[i])/3
+                yA = int(board[i])%3
+                xB = i/3
+                yB = i%3    
+                total_manhattan += self.distance_de_manhattan(xA, yA, xB, yB)
         return total_manhattan
 
-    def move(self, board, config):
-        self.board = board
-        self.config = config
-        options = self._possible_moves(board, config)
-        min_heuristic = 9**9    # worst case scenario
-        final_move = None
-        for move in options:
-            if (move != self.previous_move):
-                local_board = copy(board)
-                _out = self.board.index(0)
-                _in = self.board.index(move)
+    def Astar(self, initial_board):
+        
+        # Initlialize the graph for A* :
+        node0 = self.Node(parent=None, move=None, board=initial_board) # initial node
+        node0.g = 0
+        node0.h = self.heuristic(initial_board)
+        node0.cost = node0.h + node0.g
+
+        final_board = [i for i in range(9)] # stop condition
+        open_nodes = [node0]
+        closed_nodes = []
+        
+        if (initial_board == final_board):
+            self.solved = True
+            self.solution = [0]
+
+        self.searched_once = True
+        self.iterations += 1
+        max_depth = self.depth
+
+        # We search while there are nodes to search on.
+        while( (len(open_nodes) > 0) & (max_depth != 0) ):
+            max_depth -= 1
+            self.iterations += 1
+            # select next best node :
+            curr_node = None
+            for node in open_nodes:
+                if (curr_node != None):
+                    
+                    if(curr_node.cost > node.cost):
+                        curr_node = node
+                else :
+                    curr_node = node
+            
+            # curr_node here is the best next node
+            if(curr_node.board == final_board):
+                self.solved = True
+                self.solution = self.path_from_node(curr_node)
+                return self.solution
+
+            open_nodes.remove(curr_node)
+            closed_nodes.append(curr_node)
+            
+            next_nodes = []
+            for move in self._possible_moves(curr_node.board, self.config): 
+                new_node = self.Node(parent=curr_node, board=self._simulate_move(move, curr_node.board), move=move)
+                new_node.h = self.heuristic(new_node.board)
+                # new_node.g is set automatically. And so shoud h and loss be... but yeah
+                new_node.cost = new_node.h + new_node.g
                 
-                local_board[_out] , local_board[_in] = local_board[_in] , local_board[_out]
-                curr_heuristic = self.heuristic(local_board)
-                if(curr_heuristic <= min_heuristic):
-                    min_heuristic = curr_heuristic
-                    final_move = move
-        self.previous_move = final_move
-        return final_move 
+                next_nodes.append(new_node)
+            
+            if(next_nodes == []):
+                print("Error, next nodes is empty.")
+                return
+            for node in next_nodes :
+                if  not (node.in_list(closed_nodes)):
+                    if not node.in_list(open_nodes):
+                        open_nodes.append(node)
+                    else :
+                        for node_from_open_nodes in open_nodes:
+                            if node.equals(node_from_open_nodes):
+                                if node_from_open_nodes.g > node.g :
+                                    open_nodes.remove(node_from_open_nodes)
+                                    open_nodes.append(node)
+
+                                break
+        if(max_depth == 0):
+            print("Reached maximum depth without finding a solution.")
+        else:
+            print("No solution")
+        self.solved = False
+        
+    def path_from_node(self, node):
+        path = []
+        while(node.parent != None):
+            path.append(node.move)
+            node = node.parent
+        
+        return path
+
+    def move(self, board, config):
+        if not self.searched_once :
+            self.board = copy(board)
+            self.board[self.board.index(' ')] = 0
+            self.board = [ int(ele) for ele in self.board ]
+            self.config = config
+            
+            start_time = time.time()
+            self.searched_once = True   
+            self.Astar(self.board)
+            
+            if self.solved :
+                print("--- SOLVED in {}seconds ({} iterations) ---".format((time.time() - start_time), self.iterations ))
+                try:
+                    return str(self.solution.pop())
+                except IndexError:
+                    return str(None)
+            else :
+                return None
+        else :
+            if self.solved:
+                return str(self.solution.pop() ) 
+            else :
+                return None
+
 
 # implement move(board, config)
 class RandomPlayer(IPlayer):
@@ -72,6 +194,7 @@ class LimitedDepthPlayer(IPlayer):
 
     def __init__(self):
         """Default max depth set to 25 iterations. You can and should change it through the set_max_depth(depth) method"""
+        self.name = "Limited depth player"
         self.max_depth = 25 # experiment with this here
         self.name = "Limited-depth search"
         self.solved = False
@@ -87,7 +210,7 @@ class LimitedDepthPlayer(IPlayer):
             self.solution.reverse()
             self.solved = True
             self.searched_once = True
-            print(1/0)
+            1/0
             return
 
         if(depth >= self.max_depth):
@@ -130,7 +253,7 @@ class LimitedDepthPlayer(IPlayer):
         else :
             print("Failed to find a solution in reasonable time. Did {} iterations".format(self.iterations))
             input()
-            return '3'
+            return None
 
 class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
     def __init__(self):
@@ -140,6 +263,7 @@ class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
     def __search(self, node_trace_tuples, depth):
         next_tuples = node_trace_tuples
         while(depth < self.max_depth):   
+            
             depth += 1
             tuples = next_tuples ## current layer being examinated
             for node_trace in tuples :
@@ -148,7 +272,6 @@ class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
                 board = node_trace[0]
                 trace = node_trace[1]
                 len_trace = len(trace) - 1
-
                 if(self._wins(board)):
                     self.solution = trace
                     self.solution.reverse()
@@ -156,13 +279,13 @@ class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
                     self.searched_once = True
                     raise ZeroDivisionError
                 
-                # create the next nodes
-                for move in self._possible_moves(board, self.config):                    
-                    if(len_trace >= 0):
-                        if(move != trace[len_trace]):
-                            tuples.append([self._simulate_move(move, board), trace+[move]])
-                    else :
+            # create the next nodes
+            for move in self._possible_moves(board, self.config):                    
+                if(len_trace >= 0):
+                    if(move != trace[len_trace]):
                         tuples.append([self._simulate_move(move, board), trace+[move]])
+                else :
+                    tuples.append([self._simulate_move(move, board), trace+[move]])
                 #procede to the next iteration
 
         self.solved = False
@@ -196,26 +319,27 @@ class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
         else :
             print("Failed to find a solution in reasonable time. Did {} iterations".format(self.iterations))
             input()
-            return '3'        
+            return None        
 
 
 if __name__ == "__main__":
-    debug_board = ['1','4','2',' ','3','5','6','7','8']
+                
+    debug_board = ['1','2','6','3','4',' ','5','7','8']
     debug_config={
         'rows':3,
         'cols':3,
         'sir':'Undefined',}
 
-    p = LimitedDepthBreadthPlayer()
-    p.set_max_depth(3)
+
+    p = CLIPlayer()
     p.move(debug_board, debug_config)
         # _________________
         # |     |     |     |
-        # |  1  |     |  2  |
+        # |  1  |  2  |  6  |
         # |_____|_____|_____|
         # |     |     |     |
-        # |  3  |  4  |  5  |
+        # |  3  |  4  |     |
         # |_____|_____|_____|
         # |     |     |     |
-        # |  6  |  7  |  8  |
+        # |  5  |  7  |  8  |
         # |_____|_____|_____|

@@ -2,14 +2,14 @@ from copy import copy
 from time import sleep
 from random import shuffle
 import os
-from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, LimitedDepthBreadthPlayer
+from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, LimitedDepthBreadthPlayer, AstarAlgorithm
 import time
 from iplayer import IPlayer
 from random import randrange
 
 class CLITaquin():
-    def __init__(self):
-        self.player = LimitedDepthBreadthPlayer()
+    def __init__(self,player=RandomPlayer()):
+        self.player = player
         
         self.END = 0
         self.TEMPLATE = """
@@ -69,7 +69,7 @@ class CLITaquin():
     def update(self):
         self.clear()
         self.draw()
-        x = self.player.move(self.BOARD, self.CONFIG)
+        x = str(self.player.move(self.BOARD, self.CONFIG))
         print("Sir {} asked to move {}.".format(self.CONFIG['sir'], x))
         if (self.is_valid(x)):
             self.move(x)
@@ -99,18 +99,20 @@ class CLITaquin():
     def setup(self):      
         self.ROUND = 0
         self.END = 0
-        print("How should I call you fine sir?: ")
+        
         no_name = self.player.name
-        while(no_name):
+        while(len(no_name) < 1 ):
+            print("How should I call you fine sir?: ")
             self.CONFIG['sir'] = str(input()).capitalize()
             no_name = ( len(self.CONFIG['sir']) == 0 )
+        self.CONFIG['sir'] = no_name
         _i = None
         while (not _i):
             _i = input("Choose a complexity level: [1;oo[ : ")
         complexity = int(_i)
         
         self.shuffle(complexity)
-        self.player.set_max_depth(complexity + 3)
+        #self.player.set_max_depth(complexity + 3)
         print("Setup complete.")
         print(self.CONFIG['sir'] + ", let us begin.")
 
@@ -122,11 +124,13 @@ class CLITaquin():
         lower = empty + int(self.CONFIG['cols'])
         tmp.append(upper)
         tmp.append(lower)
-        if( ( empty  % int(self.CONFIG['cols']) != 0 )):
+        if( ( (empty+1)  % int(self.CONFIG['cols']) != 0 )):
             left = empty - 1
             tmp.append(left)
         if( ((empty-1)%int(self.CONFIG['cols']) != 0 )):
             right = empty + 1
+            tmp.append(right)
+      
             tmp.append(right)
         valid_moves = [self.BOARD[i] for i in tmp if i in range(int(self.CONFIG['cols']) * int(self.CONFIG['rows'])) ]
         
@@ -155,4 +159,13 @@ class CLITaquin():
 
 
 if __name__ == "__main__":
-    CLITaquin().main()
+    
+    print("Limited depth first:")
+    CLITaquin(LimitedDepthPlayer()).main()
+
+    print("Limited length first:")
+    CLITaquin(LimitedDepthBreadthPlayer()).main()
+
+    print("The star")
+    CLITaquin(AstarAlgorithm()).main()
+    
