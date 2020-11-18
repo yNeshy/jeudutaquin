@@ -12,6 +12,11 @@ It has support for :
 
 
 ### Run it 
+
+##### Requirements:
+* Python 2.7 or higher
+* A screen.
+
 Download all files and run the game.py file.
 
 By default, it will generate its own board according to a the complexity you input, before solving it step by step.
