@@ -8,9 +8,8 @@ from iplayer import IPlayer
 from random import randrange
 
 class CLITaquin():
-    def __init__(self,player=RandomPlayer()):
+    def __init__(self,player=RandomPlayer(), board=None):
         self.player = player
-        
         self.END = 0
         self.TEMPLATE = """
         _________________
@@ -27,7 +26,13 @@ class CLITaquin():
             # î
             # | columns and rows identifiers.
         self.TEMPLATE_LIST = ['(','é','"','@','&','ç','-','è',')']
-        self.BOARD = [' ', '1', '2', '3', '4', '5', '6', '7', '8'] # initial board
+        
+        if (board == None):
+            self.BOARD = [' ', '1', '2', '3', '4', '5', '6', '7', '8'] # initial board
+            self.randomize = True
+        else :
+            self.BOARD = board
+            self.randomize = False
         self.CONFIG = {
             'rows':3,
             'cols':3,
@@ -90,10 +95,12 @@ class CLITaquin():
 
     def shuffle(self, complexity):
         tools = IPlayer()
+    
         for _ in range(complexity):
             options = [ str(o) for o in tools._possible_moves(self.BOARD, self.CONFIG) ]
             x = options[randrange(len(options))]
             self.move(x)
+
         return self.BOARD
 
     def setup(self):      
@@ -106,35 +113,43 @@ class CLITaquin():
             self.CONFIG['sir'] = str(input()).capitalize()
             no_name = ( len(self.CONFIG['sir']) == 0 )
         self.CONFIG['sir'] = no_name
-        _i = None
-        while (not _i):
-            _i = input("Choose a complexity level: [1;oo[ : ")
-        complexity = int(_i)
-        
-        self.shuffle(complexity)
-        #self.player.set_max_depth(complexity + 3)
+        if(self.randomize):
+            _i = None
+            while (not _i):
+                _i = input("Choose a complexity level: [1;oo[ : ")
+            complexity = int(_i)
+            self.shuffle(complexity)
+            #self.player.set_max_depth(complexity + 3)
+
         print("Setup complete.")
         print(self.CONFIG['sir'] + ", let us begin.")
 
     def is_valid(self, x):
         # x being the piece we want to move
-        tmp = []
-        empty = self.BOARD.index(' ')
-        upper = empty - int(self.CONFIG['cols'])
-        lower = empty + int(self.CONFIG['cols'])
-        tmp.append(upper)
-        tmp.append(lower)
-        if( ( (empty+1)  % int(self.CONFIG['cols']) != 0 )):
-            left = empty - 1
-            tmp.append(left)
-        if( ((empty-1)%int(self.CONFIG['cols']) != 0 )):
-            right = empty + 1
-            tmp.append(right)
-      
-            tmp.append(right)
-        valid_moves = [self.BOARD[i] for i in tmp if i in range(int(self.CONFIG['cols']) * int(self.CONFIG['rows'])) ]
+        zero = 0
+        try :
+            self.BOARD.index(zero)
+        except ValueError :
+            zero = ' '
+        empty = self.BOARD.index(zero)
+        valid_moves=[]
+        # top
+        if((empty-int(self.CONFIG['cols']) > 0)):
+            valid_moves.append(self.BOARD[empty-int(self.CONFIG['cols'])])
         
-        return (x in valid_moves)
+        # bottom
+        if((empty+int(self.CONFIG['cols'])) < (int(self.CONFIG['cols']*int(self.CONFIG['rows'])))):
+
+            valid_moves.append(self.BOARD[empty+int(self.CONFIG['cols'])])
+        
+        # left
+        if(empty % int(self.CONFIG['cols']) > 0 ):
+            valid_moves.append(self.BOARD[empty-1])
+        # right
+        if ((empty+1) % int(self.CONFIG['cols']) > 0 ):
+            valid_moves.append(self.BOARD[empty+1])
+
+        return x in valid_moves
 
     def main(self):
         
@@ -147,7 +162,6 @@ class CLITaquin():
         while(self.END==0):
             self.ROUND += 1
             self.update()
-            input()
             sleep(1)
 
         if (self.END == -1):
@@ -159,13 +173,6 @@ class CLITaquin():
 
 
 if __name__ == "__main__":
-    
-    print("Limited depth first:")
-    CLITaquin(LimitedDepthPlayer()).main()
-
-    print("Limited length first:")
-    CLITaquin(LimitedDepthBreadthPlayer()).main()
-
     print("The star")
     CLITaquin(AstarAlgorithm()).main()
     

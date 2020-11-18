@@ -6,8 +6,7 @@ from iplayer import IPlayer
 # definetly not a*. doesnt even work ffs
 class AstarAlgorithm(IPlayer):
     def __init__(self):
-        self.name = "Fake A* algorithm that definitely doesn't work"
-        self.name = "Limited-depth search"
+        self.name = "A* algorithm with manhattan distance as heuristic"
         self.solved = False
         self.searched_once = False
         self.solution = []
@@ -164,7 +163,6 @@ class AstarAlgorithm(IPlayer):
             else :
                 return None
 
-
 # implement move(board, config)
 class RandomPlayer(IPlayer):
     def __init__(self):
@@ -205,6 +203,7 @@ class LimitedDepthPlayer(IPlayer):
         self.max_depth = depth
 
     def __search(self, board, trace, depth, previous_move):
+        print(board)
         if (self._wins(board)):
             self.solution = trace
             self.solution.reverse()
@@ -224,8 +223,7 @@ class LimitedDepthPlayer(IPlayer):
                 trace.remove(move)
         return
 
-    def move(self, board, config):
-        
+    def move(self, board, config):     
         print("My max depth is : "+str(self.max_depth))
         if not self.searched_once :
             self.iterations = 0
@@ -244,6 +242,7 @@ class LimitedDepthPlayer(IPlayer):
                     print("--- SOLVED in {}seconds ({} iterations) ---".format((time.time() - start_time), self.iterations ))
             except(ZeroDivisionError):
                 print("--- SOLVED in {}seconds ({} iterations) ---".format((time.time() - start_time), self.iterations ))
+                print(self.solution)
 
                 self.solved = True
                 self.searched_once = True
@@ -320,7 +319,6 @@ class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
             print("Failed to find a solution in reasonable time. Did {} iterations".format(self.iterations))
             input()
             return None        
-
 
 if __name__ == "__main__":
                 

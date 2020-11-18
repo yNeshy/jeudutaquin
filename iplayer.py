@@ -21,22 +21,23 @@ class IPlayer :
             board.index(zero)
         except ValueError :
             zero = ' '
-        tmp = []
         empty = board.index(zero)
+        valid_moves=[]
+        # top
+        if((empty-int(config['cols']) > 0)):
+            valid_moves.append(board[empty-int(config['cols'])])
         
-        upper = empty - int(config['cols'])
-        lower = empty + int(config['cols'])
-        tmp.append(upper)
-        tmp.append(lower)
-        if( ( (empty+1)  % int(config['cols']) != 0 )):
-            left = empty - 1
-            tmp.append(left)
-        if( ((empty-1)%int(config['cols']) != 0 )):
-            right = empty + 1
-            tmp.append(right)
+        # bottom
+        if((empty+int(config['cols'])) < (int(config['cols']*int(config['rows'])))):
+            valid_moves.append(board[empty+int(config['cols'])])
         
-        valid_moves = [board[i] for i in tmp if i in range(int(config['cols']) * int(config['rows'])) ]
-        print(valid_moves)
+        # left
+        if(empty % int(config['cols']) > 0 ):
+            valid_moves.append(board[empty-1])
+        # right
+        if ((empty+1) % int(config['cols']) > 0 ):
+            valid_moves.append(board[empty+1])
+
         return valid_moves
 
     def _simulate_move(self, move, board):
@@ -94,7 +95,7 @@ if __name__ == "__main__":
 
 
     debug_player = IPlayer()
-    board =['1','2','6','3','4',' ','5','7','8']
+    board =[' ','1','2','3','4','5','6','7','8']
     next_moves = debug_player._possible_moves(board, debug_config )
     print("Initial board:")
     draw(board)
