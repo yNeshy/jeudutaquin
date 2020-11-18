@@ -22,13 +22,6 @@ Download all files and run the game.py file.
 By default, it will generate its own board according to a the complexity you input, before solving it step by step.
 
 
-### Run on custom board : 
-Use the CLITaquin this way
-with board being like ['1','2','6','3','4',' ','5','7','8']
-
-`CLITaquin(player=A_PLAYER, board=YOU_BOARD).main()`
-
-
 ### Create a new player 
 To create a new player, inherit from IPlayer interface (on iplayer.py file) and implement your own `move(board, config)` function.
 
@@ -58,3 +51,14 @@ class YourPlayer(IPlayer):
 Line to edit in main :
 CLITaquin(player=YOUR_PLAYER).main()
 
+
+
+### Run on custom board : 
+Use the CLITaquin this way
+with board being like ['1','2','6','3','4',' ','5','7','8']
+
+`CLITaquin(player=A_PLAYER, board=YOU_BOARD).main()`
+
+
+
+                                                                                                                                                             
