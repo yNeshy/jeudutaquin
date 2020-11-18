@@ -30,14 +30,9 @@ with board being like ['1','2','6','3','4',' ','5','7','8']
 
 
 ### Create a new player 
-To create your own player, c/c the game.TemplateTaquinPlayer and implement your own move(board, config) function.
+To create a new player, inherit from IPlayer interface (on iplayer.py file) and implement your own `move(board, config)` function.
 
-Import your new Player, then edit this life one game.py to your newly implemented player.
-class YourPlayer(IPlayer):
-  ...
-
-and implement the "move(board, config)" function, which returns the move to made on the current board. 
-A move is denoted by the number of the piece to move:
+A move is denoted by the number of the piece to move and is only acceptable, obviously, if the move returned is possible on the board.
 
 ##### Example
         __________________
@@ -51,6 +46,15 @@ A move is denoted by the number of the piece to move:
         |  6  |  7  |  8  |
         |_____|_____|_____|
 Acceptable returns of your move function should be either 3, 4 or 6.
-
 PS: You can generate a solution the first time move is called and store it in a FIFO or whatever. Be smart with it.
+
+
+Import your new Player, then edit the game.py to use your newly implemented player.
+
+Player class:
+class YourPlayer(IPlayer):
+  ...
+
+Line to edit in main :
+CLITaquin(player=YOUR_PLAYER).main()
 
