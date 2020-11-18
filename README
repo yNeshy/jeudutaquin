@@ -1,6 +1,30 @@
-Download and run the game.py file.
+### What is it ?
+A command line interface, Taquin game.
+It has support for :
+* Human player (command line input)
+* Limited depth first search algorithm
+* Unlimited depth first search algorithm
+* Limited width first search algorithm
+* Unlimited with first search algorithm
+* A* algorithm with manhattan distance as heuristic.
 
 
+
+
+### Run it
+Download all files and run the game.py file.
+
+By default, it will generate its own board according to a the complexity you input, before solving it step by step.
+
+
+### Run on custom board :
+Use the CLITaquin this way
+with board being like ['1','2','6','3','4',' ','5','7','8']
+
+`CLITaquin(player=A_PLAYER, board=YOU_BOARD).main()`
+
+
+### Create a new player
 To create your own player, c/c the game.TemplateTaquinPlayer and implement your own move(board, config) function.
 
 Import your new Player, then edit this life one game.py to your newly implemented player.
