@@ -175,4 +175,6 @@ class CLITaquin():
 if __name__ == "__main__":
     print("The star")
     CLITaquin(AstarAlgorithm()).main()
+
+    # CLITaquin(AstarAlgorithm(), board=['1','2','6','3','4',' ','5','7','8']).main()
     
