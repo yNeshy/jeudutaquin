@@ -35,7 +35,7 @@ and implement the "move(board, config)" function, which returns the move to made
 A move is denoted by the number of the piece to move:
 
 ##### Example
-
+        __________________
         |     |     |     |
         |  3  |  1  |  2  |
         |_____|_____|_____|
