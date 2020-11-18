@@ -28,4 +28,24 @@ with board being like ['1','2','6','3','4',' ','5','7','8']
 To create your own player, c/c the game.TemplateTaquinPlayer and implement your own move(board, config) function.
 
 Import your new Player, then edit this life one game.py to your newly implemented player.
-player = CLIPlayer()
+class YourPlayer(IPlayer):
+  ...
+
+and implement the "move(board, config)" function, which returns the move to made on the current board. 
+A move is denoted by the number of the piece to move:
+
+##### Example
+
+        |     |     |     |
+        |  3  |  1  |  2  |
+        |_____|_____|_____|
+        |     |     |     |
+        |     |  4  |  5  |
+        |_____|_____|_____|
+        |     |     |     |
+        |  6  |  7  |  8  |
+        |_____|_____|_____|
+Acceptable returns of your move function should be either 3, 4 or 6.
+
+PS: You can generate a solution the first time move is called and store it in a FIFO or whatever. Be smart with it.
+
