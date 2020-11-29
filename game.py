@@ -2,7 +2,7 @@ from copy import copy
 from time import sleep
 from random import shuffle
 import os
-from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, LimitedDepthBreadthPlayer, AstarAlgorithm
+from players import CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, LimitedBreadthPlayer, AstarAlgorithm
 import time
 from iplayer import IPlayer
 from random import randrange
@@ -171,10 +171,46 @@ class CLITaquin():
             self.draw()
             print("Decent enough. I will grant you passage.")
 
+def play():
+    #CLIPlayer, RandomPlayer, AstarAlgorithm, LimitedDepthPlayer, 
+    # LimitedDepthBreadthPlayer, AstarAlgorithm
+    player_str = """Select your player:
+    1. A* algorithm
+    2. Depth first search (limited)
+    3. Breadth first search (limited)
+    4. You.
+    or keep default: (A*)
+    """
+    heuristic_str = """Choose the heuristic to be used:
+    1. Sum of manhattan distances
+    2. Sum of misplaced tokens.
+    or keep default: Manhattan
+    """
+    try:
+        player_choice = int(input(player_str))
+    except:
+        player_choice = 1
+    player = None
+
+    if (player_choice==4):
+        player = CLIPlayer()
+    elif (player_choice==3):
+        print("Unmaintained. Sorry.")
+        #player = LimitedBreadthPlayer()
+    elif (player_choice==2):
+        print("Unmaintained. Sorry.")
+        #player = LimitedDepthPlayer()
+    else:
+        try:
+            heuristic_choice = int(input(heuristic_str))
+        except:
+            heuristic_choice = 1
+        player = AstarAlgorithm(heuristic=heuristic_choice)
+    
+    CLITaquin(player=player).main()
+    
 
 if __name__ == "__main__":
     print("The star")
-    CLITaquin(AstarAlgorithm()).main()
-
-    # CLITaquin(AstarAlgorithm(), board=['1','2','6','3','4',' ','5','7','8']).main()
+    play()
     

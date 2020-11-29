@@ -5,19 +5,22 @@ from iplayer import IPlayer
 
 # definetly not a*. doesnt even work ffs
 class AstarAlgorithm(IPlayer):
-    def __init__(self):
-        self.name = "A* algorithm with manhattan distance as heuristic"
+    def __init__(self, heuristic=1):
+        self.name = "A* algorithm "
         self.solved = False
         self.searched_once = False
         self.solution = []
         self.iterations = 0
         self.depth = -1
+        if(heuristic==1):
+            self.heuristic = self.heuristic_manhattan
+            self.name += " using manhattan distance as heuristic"
+        elif (heuristic==2):
+            self.heuristic = self.heuristic_mal_place
+            self.name += " using sum of misplaced tokens"
 
     def set_max_depth(self, depth):
         self.depth = depth
-
-    def distance_de_manhattan(self, xA, yA, xB, yB ):
-        return abs(xB-xA) + abs(yB-yA)
 
     class Node():
         # could be a node factory, with heuristic implemented here. but yeah
@@ -46,7 +49,11 @@ class AstarAlgorithm(IPlayer):
         def __str__(self):
             return str(self.board) + " : costs "+ str(self.cost)
 
-    def heuristic(self, board):
+
+    def distance_de_manhattan(self, xA, yA, xB, yB ):
+        return abs(xB-xA) + abs(yB-yA)
+
+    def heuristic_manhattan(self, board):
         total_manhattan = 0
         for i in range(len(board)):
             if(board[i] != 0):
@@ -56,6 +63,16 @@ class AstarAlgorithm(IPlayer):
                 yB = i%3    
                 total_manhattan += self.distance_de_manhattan(xA, yA, xB, yB)
         return total_manhattan
+
+
+    def heuristic_mal_place(self, board):
+        heuristic = 0
+        for i in range(len(board)):
+            if(board[i]!=i):
+                heuristic += 1
+        return heuristic
+
+
 
     def Astar(self, initial_board):
         
@@ -254,7 +271,7 @@ class LimitedDepthPlayer(IPlayer):
             input()
             return None
 
-class LimitedDepthBreadthPlayer(LimitedDepthPlayer):
+class LimitedBreadthPlayer(LimitedDepthPlayer):
     def __init__(self):
         super().__init__()
         self.name = "Limited-width search"
