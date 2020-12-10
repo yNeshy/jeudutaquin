@@ -134,12 +134,11 @@ class CLITaquin():
         empty = self.BOARD.index(zero)
         valid_moves=[]
         # top
-        if((empty-int(self.CONFIG['cols']) > 0)):
+        if((empty-int(self.CONFIG['cols']) >= 0)):
             valid_moves.append(self.BOARD[empty-int(self.CONFIG['cols'])])
         
         # bottom
         if((empty+int(self.CONFIG['cols'])) < (int(self.CONFIG['cols']*int(self.CONFIG['rows'])))):
-
             valid_moves.append(self.BOARD[empty+int(self.CONFIG['cols'])])
         
         # left
@@ -148,7 +147,6 @@ class CLITaquin():
         # right
         if ((empty+1) % int(self.CONFIG['cols']) > 0 ):
             valid_moves.append(self.BOARD[empty+1])
-
         return x in valid_moves
 
     def main(self):
@@ -196,9 +194,11 @@ def play():
         player = CLIPlayer()
     elif (player_choice==3):
         print("Unmaintained. Sorry.")
+        exit(1)
         #player = LimitedBreadthPlayer()
     elif (player_choice==2):
         print("Unmaintained. Sorry.")
+        exit(1)
         #player = LimitedDepthPlayer()
     else:
         try:

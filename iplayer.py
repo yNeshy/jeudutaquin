@@ -24,13 +24,12 @@ class IPlayer :
         empty = board.index(zero)
         valid_moves=[]
         # top
-        if((empty-int(config['cols']) > 0)):
+        if((empty-int(config['cols']) >= 0)):
             valid_moves.append(board[empty-int(config['cols'])])
         
         # bottom
         if((empty+int(config['cols'])) < (int(config['cols']*int(config['rows'])))):
             valid_moves.append(board[empty+int(config['cols'])])
-        
         # left
         if(empty % int(config['cols']) > 0 ):
             valid_moves.append(board[empty-1])
@@ -95,7 +94,7 @@ if __name__ == "__main__":
 
 
     debug_player = IPlayer()
-    board =[' ','1','2','3','4','5','6','7','8']
+    board =['3','1','2',' ','4','5','6','7','8']
     next_moves = debug_player._possible_moves(board, debug_config )
     print("Initial board:")
     draw(board)
